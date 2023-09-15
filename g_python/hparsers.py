@@ -550,3 +550,34 @@ class HHeightMap:
 
     def get_tiles(self) -> list[HHeightMapTile]:
         return [self.get_tile(*self.index_to_coords(index)) for index in range(len(self.tiles))]
+
+class HScoreEntry:
+    def __init__(self, score, unk, username):
+        self.score = score
+        self.unknown = unk
+        self.username = username
+
+    def __str__(self):
+        return "score: {}, username: {}".format(self.score, self.username)
+
+    def __repr__(self):
+        return "HScoreEntry({}, {}, {})".format(self.score, self.unknown, self.username)
+    
+
+
+class HScoreBoard:
+    def __init__(self, packet: HPacket):
+        (self.id, self.unk1, self.unk2, self.unk3, self.unk4) = packet.read('sisii') 
+        self.ScoreEntries = []
+        for _ in range(packet.read_int()):
+            (score, unk, username) = packet.read('iis')
+            self.ScoreEntries.append(HScoreEntry(score, unk, username))
+
+    @classmethod
+    def parse(cls, packet):
+        return HScoreBoard(packet)
+
+
+    def __str__(self):
+        return "id: {}, ScoreEntries: {}".format(str(self.id), str(self.ScoreEntries))
+
